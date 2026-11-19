@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Campus Market</string>
+    <string name="search_placeholder">Search campus listings…</string>
+    <string name="all_categories">All</string>
+    <string name="category_textbooks">Textbooks</string>
+    <string name="category_electronics">Electronics</string>
+    <string name="category_dorm">Dorm</string>
+    <string name="category_supplies">Supplies</string>
+    <string name="favorites_title">Saved Items</string>
+    <string name="no_items_found">No listings found matching your search</string>
+    <string name="no_favorites_found">You haven\'t saved any items yet</string>
+    <string name="contact_seller">Contact Seller</string>
+    <string name="item_condition">Condition: %1$s</string>
+    <string name="item_seller">Seller: %1$s</string>
+    <string name="item_location">Location: %1$s</string>
+    <string name="back">Back</string>
+    <string name="currency_symbol">$</string>
+</resources>
