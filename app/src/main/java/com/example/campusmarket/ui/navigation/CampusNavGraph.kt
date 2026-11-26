@@ -12,15 +12,25 @@ import androidx.navigation.navArgument
 import com.example.campusmarket.ui.screens.DetailScreen
 import com.example.campusmarket.ui.screens.FavoritesScreen
 import com.example.campusmarket.ui.screens.HomeScreen
+import com.example.campusmarket.ui.screens.MyListingsScreen
+import com.example.campusmarket.ui.screens.OnlineMarketScreen
 import com.example.campusmarket.ui.viewmodel.MarketViewModel
+import com.example.campusmarket.ui.viewmodel.MyListingsViewModel
+import com.example.campusmarket.ui.viewmodel.OnlineMarketViewModel
 
 @Composable
 fun CampusNavGraph(
     navController: NavHostController,
-    viewModel: MarketViewModel,
+    marketViewModel: MarketViewModel,
+    onlineViewModel: OnlineMarketViewModel,
+    myListingsViewModel: MyListingsViewModel,
     modifier: Modifier = Modifier
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by marketViewModel.uiState.collectAsState()
+    val onlineUiState by onlineViewModel.uiState.collectAsState()
+    val onlineSearchQuery by onlineViewModel.searchQuery.collectAsState()
+    val localListings by myListingsViewModel.listings.collectAsState()
+    val isDarkTheme by myListingsViewModel.isDarkTheme.collectAsState()
 
     NavHost(
         navController = navController,
@@ -30,15 +40,35 @@ fun CampusNavGraph(
         composable(Screen.Home.route) {
             HomeScreen(
                 uiState = uiState,
-                onSearchQueryChanged = viewModel::onSearchQueryChanged,
-                onCategorySelected = viewModel::onCategorySelected,
+                onSearchQueryChanged = marketViewModel::onSearchQueryChanged,
+                onCategorySelected = marketViewModel::onCategorySelected,
                 onProductClick = { productId ->
                     navController.navigate(Screen.Detail.createRoute(productId))
                 },
                 onFavoritesClick = {
                     navController.navigate(Screen.Favorites.route)
                 },
-                onToggleFavorite = viewModel::toggleFavorite
+                onToggleFavorite = marketViewModel::toggleFavorite
+            )
+        }
+
+        composable(Screen.Online.route) {
+            OnlineMarketScreen(
+                uiState = onlineUiState,
+                searchQuery = onlineSearchQuery,
+                onSearchQueryChanged = onlineViewModel::onSearchQueryChanged,
+                onRetry = onlineViewModel::retry
+            )
+        }
+
+        composable(Screen.MyListings.route) {
+            MyListingsScreen(
+                listings = localListings,
+                isDarkTheme = isDarkTheme,
+                onDarkThemeChange = myListingsViewModel::setDarkTheme,
+                onAddListing = myListingsViewModel::addListing,
+                onUpdateListing = myListingsViewModel::updateListing,
+                onDeleteListing = myListingsViewModel::deleteListing
             )
         }
 
@@ -54,19 +84,19 @@ fun CampusNavGraph(
             DetailScreen(
                 productId = productId,
                 isFavorite = uiState.favoriteProductIds.contains(productId),
-                onToggleFavorite = { viewModel.toggleFavorite(productId) },
+                onToggleFavorite = { marketViewModel.toggleFavorite(productId) },
                 onBackClick = { navController.popBackStack() }
             )
         }
 
         composable(Screen.Favorites.route) {
             FavoritesScreen(
-                favoriteProducts = viewModel.getFavorites(),
+                favoriteProducts = marketViewModel.getFavorites(),
                 onProductClick = { productId ->
                     navController.navigate(Screen.Detail.createRoute(productId))
                 },
                 onBackClick = { navController.popBackStack() },
-                onToggleFavorite = viewModel::toggleFavorite
+                onToggleFavorite = marketViewModel::toggleFavorite
             )
         }
     }
